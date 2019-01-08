@@ -3,7 +3,7 @@ WBStartup
 
 .variables
 DEFTYPE .w
-Dim map(9,7)
+Dim mapdata(9,7)
 xoff.b=14+16
 yoff.b=24+16
 pillspeed.f
@@ -338,16 +338,16 @@ Return
 Use BitMap 0
 Cls
 ;pick map
-If lmap=0 Then Restore map0
-If lmap=1 Then Restore map1
-If lmap=2 Then Restore map2
-If lmap=3 Then Restore map3
+If lmap=0 Then Restore mapdata0
+If lmap=1 Then Restore mapdata1
+If lmap=2 Then Restore mapdata2
+If lmap=3 Then Restore mapdata3
 ;blit the map out
 For row=0 To 6
   For column=0 To 8
-  Read map
-  Let map(column,row)=map
-  Blit map(column,row),column*32+xoff-16,row*32+yoff-16
+  Read mapi
+  Let mapdata(column,row)=mapi
+  Blit mapdata(column,row),column*32+xoff-16,row*32+yoff-16
   Next column
 Next row
 ;draw outer edges
@@ -383,7 +383,7 @@ If player\subpix=0
   If player\direction=8 Then player\x-1
   If player\direction=1 Then player\x+1
   player\x=QWrap(player\x,0,9)
-  Let exit=map(player\x,player\y)
+  Let exit=mapdata(player\x,player\y)
   Gosub canigo
   player\direction=0
   player\frame=16
@@ -506,7 +506,7 @@ If enemy(e)\subpix=0 AND enemy(e)\state<4
   If enemy(e)\direction=8 Then enemy(e)\x-1
   If enemy(e)\direction=1 Then enemy(e)\x+1
   enemy(e)\x=QWrap(enemy(e)\x,0,9)
-  Let exit=map(enemy(e)\x,enemy(e)\y)
+  Let exit=mapdata(enemy(e)\x,enemy(e)\y)
   ;workout where enemy should head depending on its state
   If enemy(e)\state=1 Then enemy(e)\xdest=player\x:enemy(e)\ydest=player\y
   If enemy(e)\state=2 Then enemy(e)\xdest=player\x+4:enemy(e)\ydest=player\y+3:enemy(e)\col-1
@@ -616,7 +616,7 @@ If pill(p)\subpix=0
   If pill(p)\direction=8 Then pill(p)\x-1
   If pill(p)\direction=1 Then pill(p)\x+1
   pill(p)\x=QWrap(pill(p)\x,0,9)
-  Let exit=map(pill(p)\x,pill(p)\y)
+  Let exit=mapdata(pill(p)\x,pill(p)\y)
   pill(p)\xdest=player\x+4:pill(p)\ydest=player\y+3
   pill(p)\xdest=QWrap(pill(p)\xdest,0,9)
   pill(p)\ydest=QWrap(pill(p)\ydest,0,7)
@@ -814,29 +814,29 @@ Return
 spinner+1:spinner=QWrap(spinner,0,4)
 Select spinner
   Case 1
-    map(4,4)=13;middle
-    map(4,5)-4 ;open bottom
-    map(5,4)+8 ;close right
+    mapdata(4,4)=13;middle
+    mapdata(4,5)-4 ;open bottom
+    mapdata(5,4)+8 ;close right
   Case 2
-    map(4,4)=7;middle
-    map(4,5)+4;close bottom
-    map(3,4)-1;open left
+    mapdata(4,4)=7;middle
+    mapdata(4,5)+4;close bottom
+    mapdata(3,4)-1;open left
   Case 3
-    map(4,4)=11
-    map(3,4)+1 ;close left
-    map(4,3)-2 ;open top
+    mapdata(4,4)=11
+    mapdata(3,4)+1 ;close left
+    mapdata(4,3)-2 ;open top
   Case 0
-    map(4,4)=14
-    map(4,3)+2 ;close top
-    map(5,4)-8 ;open right
+    mapdata(4,4)=14
+    mapdata(4,3)+2 ;close top
+    mapdata(5,4)-8 ;open right
 End Select
 Use BitMap 0
 ;blit the spinner and surrounding tiles
-Blit map(4,3),4*32+xoff-16,3*32+yoff-16
-Blit map(5,4),5*32+xoff-16,4*32+yoff-16
-Blit map(4,5),4*32+xoff-16,5*32+yoff-16
-Blit map(3,4),3*32+xoff-16,4*32+yoff-16
-Blit map(4,4),4*32+xoff-16,4*32+yoff-16
+Blit mapdata(4,3),4*32+xoff-16,3*32+yoff-16
+Blit mapdata(5,4),5*32+xoff-16,4*32+yoff-16
+Blit mapdata(4,5),4*32+xoff-16,5*32+yoff-16
+Blit mapdata(3,4),3*32+xoff-16,4*32+yoff-16
+Blit mapdata(4,4),4*32+xoff-16,4*32+yoff-16
 Return
 
 .counters
@@ -883,7 +883,7 @@ Return
 .gfxswitch
 ;check if space pressed and change graphics set
 If butcount=0
-  If RawStatus(64)=-1
+  If RawStatus(64)=-1 or JoyB(1) & 2 = 2
   butcount=5
     If gfx=0
     gfx=81
@@ -969,7 +969,7 @@ Data$ " "
 
 
 .mapdata
-.map0
+.mapdata0
 Data 12,06,04,05,12,06,04,06,05
 Data 08,04,01,08,02,06,00,04,01
 Data 09,09,10,00,05,12,03,09,09
@@ -977,7 +977,7 @@ Data 10,01,12,00,02,00,05,08,03
 Data 06,00,01,09,00,01,08,00,06
 Data 12,03,08,00,06,00,03,10,05
 Data 10,06,03,10,07,10,06,06,03
-.map1
+.mapdata1
 Data 12,07,12,05,12,07,12,06,05
 Data 08,06,01,10,01,12,02,04,03
 Data 10,05,08,06,00,03,12,02,05
@@ -985,7 +985,7 @@ Data 14,00,03,12,02,04,03,12,03
 Data 06,00,06,01,00,00,06,00,06
 Data 13,08,05,10,06,03,12,02,05
 Data 10,03,10,06,06,06,03,14,03
-.map2
+.mapdata2
 Data 12,05,14,05,12,06,05,12,05
 Data 09,08,04,01,08,05,08,03,09
 Data 08,01,09,08,03,09,08,05,09
@@ -993,7 +993,7 @@ Data 11,08,01,08,06,00,03,08,03
 Data 06,01,08,01,00,00,05,08,06
 Data 12,01,09,09,12,03,08,02,05
 Data 11,10,03,10,02,07,10,06,03
-.map3
+.mapdata3
 Data 13,14,06,06,05,12,06,04,07
 Data 08,04,06,04,03,08,05,08,05
 Data 09,10,05,08,05,11,08,01,09
